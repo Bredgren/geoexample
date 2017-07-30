@@ -1,0 +1,3 @@
+[[constraint]]
+	name = "github.com/hajimehoshi/ebiten"
+	version = "^1.5.1"
