@@ -1,7 +1,9 @@
 [[constraint]]
 	name = "github.com/hajimehoshi/ebiten"
-	version = "^1.5.1"
+	# version = "^1.5.1"
+	branch = "master"
 
 [[constraint]]
 	name = "github.com/Bredgren/geo"
-	version = "*"
+	# version = "*"
+	branch = "master"

@@ -2,10 +2,10 @@
 
 
 [[projects]]
+  branch = "master"
   name = "github.com/Bredgren/geo"
   packages = ["."]
-  revision = "7d32e898c1da1958a538ee651a1796d95cb7b266"
-  version = "v1.0.0-alpha1"
+  revision = "2a7840c2da6240a474d6b637bc76fa3ebf057ffb"
 
 [[projects]]
   branch = "master"
@@ -32,10 +32,10 @@
   revision = "a2d36020a9b2af0f7aefb23467ab48f3b501beec"
 
 [[projects]]
+  branch = "master"
   name = "github.com/hajimehoshi/ebiten"
-  packages = [".","ebitenutil","ebitenutil/internal/assets","internal","internal/affine","internal/endian","internal/graphics","internal/jni","internal/loop","internal/opengl","internal/restorable","internal/sync","internal/ui"]
-  revision = "3b6a154f016a58c7efbb3e7070289ec6ea3317df"
-  version = "v1.5.1"
+  packages = [".","ebitenutil","ebitenutil/internal/assets","internal","internal/affine","internal/clock","internal/endian","internal/graphics","internal/jni","internal/loop","internal/opengl","internal/restorable","internal/sync","internal/ui","internal/web"]
+  revision = "807d03eb3b3e447af6e637275f9ea0826325a79b"
 
 [[projects]]
   branch = "master"
@@ -52,6 +52,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "6eb22f45535a987656403bf722d4c529250fa7cf46852549d8c74e41b57712d4"
+  inputs-digest = "f95eb02c9ca1c9852761630a13b2aa823d4b6340b41414d15eba35d9f52ed933"
   solver-name = "gps-cdcl"
   solver-version = 1
