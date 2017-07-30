@@ -2,6 +2,12 @@
 
 
 [[projects]]
+  name = "github.com/Bredgren/geo"
+  packages = ["."]
+  revision = "7d32e898c1da1958a538ee651a1796d95cb7b266"
+  version = "v1.0.0-alpha1"
+
+[[projects]]
   branch = "master"
   name = "github.com/go-gl/gl"
   packages = ["v2.1/gl"]
@@ -46,6 +52,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "6bcdd14a0cc58eec878cb5c0132c1e0b7420b5ac350916f85a8fe776bf81d821"
+  inputs-digest = "6eb22f45535a987656403bf722d4c529250fa7cf46852549d8c74e41b57712d4"
   solver-name = "gps-cdcl"
   solver-version = 1

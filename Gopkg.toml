@@ -1,3 +1,7 @@
 [[constraint]]
 	name = "github.com/hajimehoshi/ebiten"
 	version = "^1.5.1"
+
+[[constraint]]
+	name = "github.com/Bredgren/geo"
+	version = "*"
