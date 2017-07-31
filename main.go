@@ -3,17 +3,60 @@ package main
 import (
 	"fmt"
 	"image/color"
+	"time"
 
+	"github.com/Bredgren/geo"
 	"github.com/hajimehoshi/ebiten"
 	"github.com/hajimehoshi/ebiten/ebitenutil"
 )
 
-var square *ebiten.Image
+const (
+	Width  = 320
+	Height = 240
+)
+
+type Square struct {
+	img  *ebiten.Image
+	opts ebiten.DrawImageOptions
+}
+
+var (
+	square Square
+)
 
 var (
 	buttonDown     bool
 	buttonJustDown bool
 )
+
+var (
+	currentOption int = 0
+)
+
+type DisplayFunc func(target *ebiten.Image)
+
+type example struct {
+	key  ebiten.Key
+	name string
+	fn   DisplayFunc
+}
+
+var options = []example{
+	{ebiten.Key1, "Ease Functions", easeFunctions},
+	{ebiten.Key2, "Perlin", perlin},
+}
+
+func drawOptions(target *ebiten.Image) {
+	ebitenutil.DebugPrint(target,
+		fmt.Sprintf("Press a number. Current: %s", options[currentOption].name))
+	for i, ex := range options {
+		newLines := "\n"
+		for l := 0; l < i; l++ {
+			newLines += "\n"
+		}
+		ebitenutil.DebugPrint(target, fmt.Sprintf("%s%d - %s", newLines, ex.key, ex.name))
+	}
+}
 
 func update(screen *ebiten.Image) error {
 	pressed := ebiten.IsKeyPressed(ebiten.KeyF)
@@ -25,44 +68,79 @@ func update(screen *ebiten.Image) error {
 	}
 
 	screen.Fill(color.NRGBA{0xff, 0x00, 0x00, 0xff})
-	ebitenutil.DebugPrint(screen, "Hello")
 
-	if buttonDown {
-		ebitenutil.DebugPrint(screen, "\n\n\nF")
-	}
-
-	if square == nil {
-		square, _ = ebiten.NewImage(1, 1, ebiten.FilterNearest)
-	}
-
-	square.Fill(color.White)
-
-	opts := &ebiten.DrawImageOptions{}
-
-	// squares := []geo.Rect{
-	// 	geo.RectWH(32, 32), geo.RectWH(32, 32), geo.RectWH(32, 32), geo.RectWH(32, 32),
-	// }
-	// squares[0].SetTopLeft(0, 0)
-	// squares[1].SetTopRight(640, 0)
-	// squares[2].SetBottomLeft(0, 480)
-	// squares[3].SetBottomRight(640, 480)
-
-	// for _, s := range squares {
-	// 	opts.GeoM.Translate(s.TopLeft())
-	// 	screen.DrawImage(square, opts)
-	// 	opts.GeoM.Reset()
+	// square.img.Fill(color.White)
+	//
+	// for y := 0.0; y < 480; y += 32 {
+	// 	for x := 0.0; x < 640; x += 32 {
+	// 		square.opts.GeoM.Scale(31, 31)
+	// 		square.opts.GeoM.Translate(x, y)
+	// 		screen.DrawImage(square.img, &square.opts)
+	// 		square.opts.GeoM.Reset()
+	// 	}
 	// }
 
-	for y := 0.0; y < 480; y += 32 {
-		for x := 0.0; x < 640; x += 32 {
-			opts.GeoM.Scale(31, 31)
-			opts.GeoM.Translate(x, y)
-			screen.DrawImage(square, opts)
-			opts.GeoM.Reset()
-		}
-	}
+	options[currentOption].fn(screen)
+
+	drawOptions(screen)
 
 	return nil
+}
+
+const (
+	easeTime = 4 * time.Second
+	easeWait = 1 * time.Second
+	easeSize = 10.0
+)
+
+var (
+	easeStart = time.Now()
+	easeFns   = []geo.EaseFn{
+		geo.EaseLinear,
+		geo.EaseInQuad,
+		geo.EaseOutQuad,
+		geo.EaseInOutQuad,
+
+		// geo.EaseInElastic,
+		// geo.EaseOutElastic,
+		// geo.EaseInOutElastic,
+		// geo.EaseInBack,
+		// geo.EaseOutBack,
+		// geo.EaseInOutBack,
+		geo.EaseInBounce,
+		geo.EaseOutBounce,
+		geo.EaseInOutBounce,
+	}
+)
+
+func easeFunctions(target *ebiten.Image) {
+	square.img.Fill(color.White)
+
+	now := time.Now()
+	dt := now.Sub(easeStart)
+	if dt > easeTime+easeWait {
+		easeStart = now.Add(easeWait)
+		dt = 0
+	}
+
+	t := geo.Clamp(dt.Seconds()/easeTime.Seconds(), 0, 1)
+
+	startY := 50.0
+	start, end := geo.VecXY(100, startY), geo.VecXY(Width-20, startY)
+	offset := geo.VecXY(0, easeSize*1.5)
+
+	for _, fn := range easeFns {
+		pos := geo.EaseVec(start, end, t, fn)
+		square.opts.GeoM.Reset()
+		square.opts.GeoM.Scale(easeSize, easeSize)
+		square.opts.GeoM.Translate(pos.XY())
+		target.DrawImage(square.img, &square.opts)
+		start.Add(offset)
+		end.Add(offset)
+	}
+}
+
+func perlin(target *ebiten.Image) {
 }
 
 func main() {
@@ -72,7 +150,9 @@ func main() {
 	// On Desktop 1920x1080, 100% scale
 	//  - draw area is proper size (640x480)
 	//  - title bar does not overlap draw area
-	if err := ebiten.Run(update, 640, 480, 1, "Hello World!"); err != nil {
+	square.img, _ = ebiten.NewImage(1, 1, ebiten.FilterNearest)
+
+	if err := ebiten.Run(update, Width, Height, 2, "Geo Examples"); err != nil {
 		panic(err)
 	}
 	fmt.Println("bye")
