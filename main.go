@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"image/color"
+	"math"
 	"time"
 
 	"github.com/Bredgren/geo"
@@ -59,6 +60,9 @@ func drawOptions(target *ebiten.Image) {
 }
 
 func update(screen *ebiten.Image) error {
+	if ebiten.IsRunningSlowly() {
+		return nil
+	}
 	pressed := ebiten.IsKeyPressed(ebiten.KeyF)
 	buttonJustDown = pressed && !buttonDown
 	buttonDown = pressed
@@ -66,19 +70,6 @@ func update(screen *ebiten.Image) error {
 	if buttonJustDown {
 		ebiten.SetFullscreen(!ebiten.IsFullscreen())
 	}
-
-	screen.Fill(color.NRGBA{0xff, 0x00, 0x00, 0xff})
-
-	// square.img.Fill(color.White)
-	//
-	// for y := 0.0; y < 480; y += 32 {
-	// 	for x := 0.0; x < 640; x += 32 {
-	// 		square.opts.GeoM.Scale(31, 31)
-	// 		square.opts.GeoM.Translate(x, y)
-	// 		screen.DrawImage(square.img, &square.opts)
-	// 		square.opts.GeoM.Reset()
-	// 	}
-	// }
 
 	options[currentOption].fn(screen)
 
@@ -97,35 +88,38 @@ var (
 	easeStart = time.Now()
 	easeFns   = []geo.EaseFn{
 		geo.EaseLinear,
+
 		geo.EaseInQuad,
-		geo.EaseOutQuad,
-		geo.EaseInOutQuad,
 		geo.EaseInCubic,
-		geo.EaseOutCubic,
-		geo.EaseInOutCubic,
 		geo.EaseInQuart,
-		geo.EaseOutQuart,
-		geo.EaseInOutQuart,
 		geo.EaseInQuint,
-		geo.EaseOutQuint,
-		geo.EaseInOutQuint,
 		geo.EaseInSine,
-		geo.EaseOutSine,
-		geo.EaseInOutSine,
 		geo.EaseInCirc,
-		geo.EaseOutCirc,
-		geo.EaseInOutCirc,
 		geo.EaseInExpo,
-		geo.EaseOutExpo,
-		geo.EaseInOutExpo,
 		geo.EaseInElastic,
-		geo.EaseOutElastic,
-		geo.EaseInOutElastic,
 		geo.EaseInBack,
-		geo.EaseOutBack,
-		geo.EaseInOutBack,
 		geo.EaseInBounce,
+
+		geo.EaseOutQuad,
+		geo.EaseOutCubic,
+		geo.EaseOutQuart,
+		geo.EaseOutQuint,
+		geo.EaseOutSine,
+		geo.EaseOutCirc,
+		geo.EaseOutExpo,
+		geo.EaseOutElastic,
+		geo.EaseOutBack,
 		geo.EaseOutBounce,
+
+		geo.EaseInOutQuad,
+		geo.EaseInOutCubic,
+		geo.EaseInOutQuart,
+		geo.EaseInOutQuint,
+		geo.EaseInOutSine,
+		geo.EaseInOutCirc,
+		geo.EaseInOutExpo,
+		geo.EaseInOutElastic,
+		geo.EaseInOutBack,
 		geo.EaseInOutBounce,
 	}
 )
@@ -146,7 +140,7 @@ func easeFunctions(target *ebiten.Image) {
 	start, end := geo.VecXY(100, startY), geo.VecXY(Width-20, startY)
 	offset := geo.VecXY(0, easeSize*1.2)
 
-	for _, fn := range easeFns {
+	for i, fn := range easeFns {
 		pos := geo.EaseVec(start, end, t, fn)
 		square.opts.GeoM.Reset()
 		square.opts.GeoM.Scale(easeSize, easeSize)
@@ -154,6 +148,15 @@ func easeFunctions(target *ebiten.Image) {
 		target.DrawImage(square.img, &square.opts)
 		start.Add(offset)
 		end.Add(offset)
+		if i%10 == 0 {
+			start.Y += easeSize
+			end.Y += easeSize
+		}
+		if i == 0 {
+			square.img.Fill(color.NRGBA{0x0, 0x0, 0xff, 0xff})
+		}
+		square.opts.ColorM.Reset()
+		square.opts.ColorM.RotateHue(float64(i%10) / 10 * 2 * math.Pi)
 	}
 }
 
