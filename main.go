@@ -101,12 +101,12 @@ var (
 		geo.EaseOutQuad,
 		geo.EaseInOutQuad,
 
-		// geo.EaseInElastic,
-		// geo.EaseOutElastic,
-		// geo.EaseInOutElastic,
-		// geo.EaseInBack,
-		// geo.EaseOutBack,
-		// geo.EaseInOutBack,
+		geo.EaseInElastic,
+		geo.EaseOutElastic,
+		geo.EaseInOutElastic,
+		geo.EaseInBack,
+		geo.EaseOutBack,
+		geo.EaseInOutBack,
 		geo.EaseInBounce,
 		geo.EaseOutBounce,
 		geo.EaseInOutBounce,
@@ -127,7 +127,7 @@ func easeFunctions(target *ebiten.Image) {
 
 	startY := 50.0
 	start, end := geo.VecXY(100, startY), geo.VecXY(Width-20, startY)
-	offset := geo.VecXY(0, easeSize*1.5)
+	offset := geo.VecXY(0, easeSize*1.2)
 
 	for _, fn := range easeFns {
 		pos := geo.EaseVec(start, end, t, fn)
