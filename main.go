@@ -90,7 +90,7 @@ func update(screen *ebiten.Image) error {
 const (
 	easeTime = 4 * time.Second
 	easeWait = 1 * time.Second
-	easeSize = 10.0
+	easeSize = 5.0
 )
 
 var (
@@ -100,7 +100,24 @@ var (
 		geo.EaseInQuad,
 		geo.EaseOutQuad,
 		geo.EaseInOutQuad,
-
+		geo.EaseInCubic,
+		geo.EaseOutCubic,
+		geo.EaseInOutCubic,
+		geo.EaseInQuart,
+		geo.EaseOutQuart,
+		geo.EaseInOutQuart,
+		geo.EaseInQuint,
+		geo.EaseOutQuint,
+		geo.EaseInOutQuint,
+		geo.EaseInSine,
+		geo.EaseOutSine,
+		geo.EaseInOutSine,
+		geo.EaseInCirc,
+		geo.EaseOutCirc,
+		geo.EaseInOutCirc,
+		geo.EaseInExpo,
+		geo.EaseOutExpo,
+		geo.EaseInOutExpo,
 		geo.EaseInElastic,
 		geo.EaseOutElastic,
 		geo.EaseInOutElastic,
@@ -125,7 +142,7 @@ func easeFunctions(target *ebiten.Image) {
 
 	t := geo.Clamp(dt.Seconds()/easeTime.Seconds(), 0, 1)
 
-	startY := 50.0
+	startY := 30.0
 	start, end := geo.VecXY(100, startY), geo.VecXY(Width-20, startY)
 	offset := geo.VecXY(0, easeSize*1.2)
 
