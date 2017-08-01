@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"image"
 	"image/color"
 	"math"
 	"time"
@@ -31,7 +32,7 @@ var (
 )
 
 var (
-	currentOption int = 0
+	currentOption int = 1
 )
 
 type DisplayFunc func(target *ebiten.Image)
@@ -49,9 +50,9 @@ var options = []example{
 
 func drawOptions(target *ebiten.Image) {
 	ebitenutil.DebugPrint(target,
-		fmt.Sprintf("Press a number. Current: %s", options[currentOption].name))
+		fmt.Sprintf("\nPress a number. Current: %s", options[currentOption].name))
 	for i, ex := range options {
-		newLines := "\n"
+		newLines := "\n\n"
 		for l := 0; l < i; l++ {
 			newLines += "\n"
 		}
@@ -60,9 +61,6 @@ func drawOptions(target *ebiten.Image) {
 }
 
 func update(screen *ebiten.Image) error {
-	if ebiten.IsRunningSlowly() {
-		return nil
-	}
 	pressed := ebiten.IsKeyPressed(ebiten.KeyF)
 	buttonJustDown = pressed && !buttonDown
 	buttonDown = pressed
@@ -71,8 +69,13 @@ func update(screen *ebiten.Image) error {
 		ebiten.SetFullscreen(!ebiten.IsFullscreen())
 	}
 
+	if ebiten.IsRunningSlowly() {
+		return nil
+	}
+
 	options[currentOption].fn(screen)
 
+	ebitenutil.DebugPrint(screen, fmt.Sprintf("FPS: %0.2f", ebiten.CurrentFPS()))
 	drawOptions(screen)
 
 	return nil
@@ -124,7 +127,7 @@ var (
 	}
 )
 
-func easeFunctions(target *ebiten.Image) {
+func easeFunctions(dst *ebiten.Image) {
 	square.img.Fill(color.White)
 
 	now := time.Now()
@@ -145,7 +148,7 @@ func easeFunctions(target *ebiten.Image) {
 		square.opts.GeoM.Reset()
 		square.opts.GeoM.Scale(easeSize, easeSize)
 		square.opts.GeoM.Translate(pos.XY())
-		target.DrawImage(square.img, &square.opts)
+		dst.DrawImage(square.img, &square.opts)
 		start.Add(offset)
 		end.Add(offset)
 		if i%10 == 0 {
@@ -160,7 +163,32 @@ func easeFunctions(target *ebiten.Image) {
 	}
 }
 
-func perlin(target *ebiten.Image) {
+var (
+	perlinImg      *image.RGBA
+	perlinZ        = 0.0
+	perlinRate     = 0.3
+	perlinPrevTime = time.Now()
+)
+
+func perlin(dst *ebiten.Image) {
+	w, h := dst.Size()
+	if perlinImg == nil {
+		perlinImg = image.NewRGBA(image.Rect(0, 0, w, h))
+
+	}
+	for i := 0; i < w*h; i++ {
+		x, y := float64(i%w), float64(i/w)
+		val := geo.PerlinOctave(x*0.01, y*0.01, perlinZ, 5, 0.5)
+		perlinImg.Pix[4*i] = uint8(0xff * val)
+		perlinImg.Pix[4*i+1] = uint8(0xff * val)
+		perlinImg.Pix[4*i+2] = uint8(0xff * val)
+		perlinImg.Pix[4*i+3] = 0xff
+	}
+	dst.ReplacePixels(perlinImg.Pix)
+	t := time.Now()
+	dt := perlinPrevTime.Sub(t).Seconds()
+	perlinZ += dt * perlinRate
+	perlinPrevTime = t
 }
 
 func main() {
