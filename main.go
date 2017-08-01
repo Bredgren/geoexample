@@ -5,6 +5,7 @@ import (
 	"image"
 	"image/color"
 	"math"
+	"math/rand"
 	"time"
 
 	"github.com/Bredgren/geo"
@@ -35,7 +36,7 @@ var (
 	currentOption int = 0
 )
 
-type DisplayFunc func(target *ebiten.Image)
+type DisplayFunc func(dst *ebiten.Image)
 
 type example struct {
 	key  ebiten.Key
@@ -44,8 +45,9 @@ type example struct {
 }
 
 var options = []example{
-	{ebiten.Key1, "Ease Functions", easeFunctions},
+	{ebiten.Key1, "Ease", easeFunctions},
 	{ebiten.Key2, "Perlin", perlin},
+	{ebiten.Key3, "Shake", shake},
 }
 
 func checkOptions() {
@@ -199,6 +201,53 @@ func perlin(dst *ebiten.Image) {
 	dt := perlinPrevTime.Sub(t).Seconds()
 	perlinZ += dt * perlinRate
 	perlinPrevTime = t
+}
+
+var (
+	shakeStartTime = time.Now()
+	shakeDuration  = 2 * time.Second
+	shakeStart     = time.Now()
+	seed           = rand.Float64()
+)
+
+func shake(dst *ebiten.Image) {
+	now := time.Now()
+	t := now.Sub(shakeStartTime)
+
+	cursor := geo.VecXYi(ebiten.CursorPosition())
+
+	rect := geo.RectXYWH(150, 50, 20, 20)
+
+	offset := geo.Vec0
+	if rect.CollidePoint(cursor.XY()) {
+		offset = geo.ShakeConst(seed, t.Seconds(), 10, 10)
+		square.img.Fill(color.NRGBA{0xff, 0x00, 0x00, 0xff})
+	} else {
+		square.img.Fill(color.White)
+	}
+	square.opts.GeoM.Reset()
+	square.opts.GeoM.Scale(rect.W, rect.H)
+	square.opts.GeoM.Translate(geo.VecXY(rect.TopLeft()).Plus(offset).XY())
+	dst.DrawImage(square.img, &square.opts)
+
+	rect = geo.RectXYWH(200, 50, 20, 20)
+
+	if rect.CollidePoint(cursor.XY()) && now.After(shakeStart.Add(shakeDuration)) {
+		shakeStart = now
+		seed = rand.Float64()
+	}
+	offset = geo.Vec0
+	if !now.After(shakeStart.Add(shakeDuration)) {
+		t = now.Sub(shakeStart)
+		offset = geo.Shake(seed, t.Seconds(), shakeDuration.Seconds(), 20, 20, geo.EaseOutQuad)
+		square.img.Fill(color.NRGBA{0xff, 0x00, 0x00, 0xff})
+	} else {
+		square.img.Fill(color.White)
+	}
+	square.opts.GeoM.Reset()
+	square.opts.GeoM.Scale(rect.W, rect.H)
+	square.opts.GeoM.Translate(geo.VecXY(rect.TopLeft()).Plus(offset).XY())
+	dst.DrawImage(square.img, &square.opts)
 }
 
 func main() {

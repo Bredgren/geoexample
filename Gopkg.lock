@@ -5,7 +5,7 @@
   branch = "master"
   name = "github.com/Bredgren/geo"
   packages = ["."]
-  revision = "1c96fddd6afde706d0ffa4f000df74cb46cb93fa"
+  revision = "c07854598e8d41c407948eaa597ff03c48dedb12"
 
 [[projects]]
   branch = "master"
@@ -47,7 +47,7 @@
   branch = "master"
   name = "golang.org/x/sys"
   packages = ["windows"]
-  revision = "0f826bdd13b500be0f1d4004938ad978fcc6031e"
+  revision = "b892924b68aa53038e8a55b255ee0d8391e8eec5"
 
 [solve-meta]
   analyzer-name = "dep"
