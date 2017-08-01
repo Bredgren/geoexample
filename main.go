@@ -206,8 +206,11 @@ func perlin(dst *ebiten.Image) {
 var (
 	shakeStartTime = time.Now()
 	shakeDuration  = 2 * time.Second
-	shakeStart     = time.Now()
-	seed           = rand.Float64()
+	shakeDuration2 = 500 * time.Millisecond
+	shakeStart1    = time.Now()
+	shakeStart2    = time.Now()
+	seed1          = rand.Float64()
+	seed2          = rand.Float64()
 )
 
 func shake(dst *ebiten.Image) {
@@ -220,7 +223,7 @@ func shake(dst *ebiten.Image) {
 
 	offset := geo.Vec0
 	if rect.CollidePoint(cursor.XY()) {
-		offset = geo.ShakeConst(seed, t.Seconds(), 10, 10)
+		offset = geo.ShakeConst(seed1, t.Seconds(), 10, 10)
 		square.img.Fill(color.NRGBA{0xff, 0x00, 0x00, 0xff})
 	} else {
 		square.img.Fill(color.White)
@@ -232,14 +235,14 @@ func shake(dst *ebiten.Image) {
 
 	rect = geo.RectXYWH(200, 50, 20, 20)
 
-	if rect.CollidePoint(cursor.XY()) && now.After(shakeStart.Add(shakeDuration)) {
-		shakeStart = now
-		seed = rand.Float64()
+	if rect.CollidePoint(cursor.XY()) && now.After(shakeStart1.Add(shakeDuration)) {
+		shakeStart1 = now
+		seed1 = rand.Float64()
 	}
 	offset = geo.Vec0
-	if !now.After(shakeStart.Add(shakeDuration)) {
-		t = now.Sub(shakeStart)
-		offset = geo.Shake(seed, t.Seconds(), shakeDuration.Seconds(), 20, 20, geo.EaseOutQuad)
+	if !now.After(shakeStart1.Add(shakeDuration)) {
+		t = now.Sub(shakeStart1)
+		offset = geo.Shake(seed1, t.Seconds(), shakeDuration.Seconds(), 20, 20, geo.EaseOutQuad)
 		square.img.Fill(color.NRGBA{0xff, 0x00, 0x00, 0xff})
 	} else {
 		square.img.Fill(color.White)
@@ -247,6 +250,28 @@ func shake(dst *ebiten.Image) {
 	square.opts.GeoM.Reset()
 	square.opts.GeoM.Scale(rect.W, rect.H)
 	square.opts.GeoM.Translate(geo.VecXY(rect.TopLeft()).Plus(offset).XY())
+	dst.DrawImage(square.img, &square.opts)
+
+	rect = geo.RectXYWH(250, 50, 20, 20)
+
+	if rect.CollidePoint(cursor.XY()) && now.After(shakeStart2.Add(shakeDuration2)) {
+		shakeStart2 = now
+		seed2 = rand.Float64()
+	}
+	offsetA := 0.0
+	if !now.After(shakeStart2.Add(shakeDuration2)) {
+		t = now.Sub(shakeStart2)
+		offsetA = geo.Shake1(seed2, t.Seconds(), shakeDuration2.Seconds(), math.Pi/3, 4, geo.EaseOutQuad)
+		square.img.Fill(color.NRGBA{0xff, 0x00, 0x00, 0xff})
+	} else {
+		square.img.Fill(color.White)
+	}
+	square.opts.GeoM.Reset()
+	square.opts.GeoM.Scale(rect.W, rect.H)
+	square.opts.GeoM.Translate(-rect.W/2, -rect.H/2)
+	square.opts.GeoM.Rotate(offsetA)
+	square.opts.GeoM.Translate(rect.W/2, rect.H/2)
+	square.opts.GeoM.Translate(geo.VecXY(rect.TopLeft()).XY())
 	dst.DrawImage(square.img, &square.opts)
 }
 
