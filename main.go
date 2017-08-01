@@ -32,7 +32,7 @@ var (
 )
 
 var (
-	currentOption int = 1
+	currentOption int = 0
 )
 
 type DisplayFunc func(target *ebiten.Image)
@@ -46,6 +46,14 @@ type example struct {
 var options = []example{
 	{ebiten.Key1, "Ease Functions", easeFunctions},
 	{ebiten.Key2, "Perlin", perlin},
+}
+
+func checkOptions() {
+	for i, option := range options {
+		if ebiten.IsKeyPressed(option.key) {
+			currentOption = i
+		}
+	}
 }
 
 func drawOptions(target *ebiten.Image) {
@@ -68,6 +76,8 @@ func update(screen *ebiten.Image) error {
 	if buttonJustDown {
 		ebiten.SetFullscreen(!ebiten.IsFullscreen())
 	}
+
+	checkOptions()
 
 	if ebiten.IsRunningSlowly() {
 		return nil
