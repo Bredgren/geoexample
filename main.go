@@ -48,6 +48,7 @@ var options = []example{
 	{ebiten.Key1, "Ease", easeFunctions},
 	{ebiten.Key2, "Perlin", perlin},
 	{ebiten.Key3, "Shake", shake},
+	{ebiten.Key4, "NumGen", vecGen},
 }
 
 func checkOptions() {
@@ -273,6 +274,55 @@ func shake(dst *ebiten.Image) {
 	square.opts.GeoM.Translate(rect.W/2, rect.H/2)
 	square.opts.GeoM.Translate(geo.VecXY(rect.TopLeft()).XY())
 	dst.DrawImage(square.img, &square.opts)
+}
+
+const (
+	pointSize = 2
+)
+
+var (
+	vecGenInit = false
+	points1    [250]geo.Vec
+	vecGen1    = geo.OffsetVec(geo.RandVecCircle(0, 40), geo.StaticVec(geo.VecXY(120, 80)))
+	points2    [150]geo.Vec
+	vecGen2    = geo.OffsetVec(geo.RandVecArc(30, 50, -math.Pi/2, math.Pi/4), geo.StaticVec(geo.VecXY(220, 70)))
+	points3    [300]geo.Vec
+	vecGen3    = geo.RandVecRects([]geo.Rect{
+		geo.RectXYWH(80, 130, 200, 10), // Top
+		geo.RectXYWH(80, 190, 200, 10), // Bottom
+		geo.RectXYWH(80, 140, 20, 50),  // Left
+		geo.RectXYWH(260, 140, 20, 50), // Right
+	})
+)
+
+func vecGen(dst *ebiten.Image) {
+	if !vecGenInit {
+		for i := range points1 {
+			points1[i] = vecGen1()
+		}
+		for i := range points2 {
+			points2[i] = vecGen2()
+		}
+		for i := range points3 {
+			points3[i] = vecGen3()
+		}
+		vecGenInit = true
+	}
+
+	points1[rand.Intn(len(points1))] = vecGen1()
+	points2[rand.Intn(len(points2))] = vecGen2()
+	points3[rand.Intn(len(points3))] = vecGen3()
+
+	square.img.Fill(color.White)
+
+	for _, points := range [][]geo.Vec{points1[:], points2[:], points3[:]} {
+		for _, p := range points {
+			square.opts.GeoM.Reset()
+			square.opts.GeoM.Scale(pointSize, pointSize)
+			square.opts.GeoM.Translate(p.Minus(geo.VecXY(pointSize/2, pointSize/2)).XY())
+			dst.DrawImage(square.img, &square.opts)
+		}
+	}
 }
 
 func main() {
