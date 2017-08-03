@@ -1,6 +1,6 @@
 # geoexample
 
-This projects purpose is to be an example/demo and to test some things for the [geo](https://github.com/Bredgren/geo) package.
+This projects purpose is to be an example/demo for the [geo](https://github.com/Bredgren/geo) package, and to test some things that are difficult to unit test.
 
 ## Here are the examples as gifs
 
