@@ -206,74 +206,91 @@ func perlin(dst *ebiten.Image) {
 
 var (
 	shakeStartTime = time.Now()
-	shakeDuration  = 2 * time.Second
-	shakeDuration2 = 500 * time.Millisecond
-	shakeStart1    = time.Now()
-	shakeStart2    = time.Now()
-	seed1          = rand.Float64()
-	seed2          = rand.Float64()
+	shakyRect1     = shakyRect{
+		rect: geo.RectXYWH(100, 100, 20, 20),
+		shaker: geo.Shaker{
+			Amplitude: 10,
+			Frequency: 10,
+		},
+	}
+	shakyRect2 = shakyRect{
+		rect: geo.RectXYWH(150, 100, 20, 20),
+		shaker: geo.Shaker{
+			Amplitude: 20,
+			Frequency: 20,
+			Duration:  2 * time.Second,
+			Falloff:   geo.EaseOutQuad,
+		},
+	}
+	shakyRect3 = shakyRect{
+		rect: geo.RectXYWH(200, 100, 20, 20),
+		shaker: geo.Shaker{
+			Amplitude: math.Pi / 3,
+			Frequency: 10,
+			Duration:  500 * time.Millisecond,
+			Falloff:   geo.EaseOutQuad,
+		},
+	}
 )
+
+type shakyRect struct {
+	rect    geo.Rect
+	shaker  geo.Shaker
+	shaking bool
+}
+
+func (s *shakyRect) update(t time.Time) {
+	cursor := geo.VecXYi(ebiten.CursorPosition())
+
+	shakeOver := t.After(s.shaker.EndTime())
+	if shakeOver && s.rect.CollidePoint(cursor.XY()) {
+		s.shaker.StartTime = t
+		shakeOver = false
+	}
+	s.shaking = !shakeOver
+}
+
+func (s *shakyRect) draw(dst *ebiten.Image, offset geo.Vec, angle float64) {
+	if s.shaking {
+		square.img.Fill(color.NRGBA{0xff, 0x00, 0x00, 0xff})
+	} else {
+		square.img.Fill(color.White)
+	}
+	square.opts.GeoM.Reset()
+	square.opts.GeoM.Scale(s.rect.W, s.rect.H)
+	square.opts.GeoM.Translate(-s.rect.W/2, -s.rect.H/2)
+	square.opts.GeoM.Rotate(angle)
+	square.opts.GeoM.Translate(s.rect.W/2, s.rect.H/2)
+	square.opts.GeoM.Translate(geo.VecXY(s.rect.TopLeft()).Plus(offset).XY())
+	dst.DrawImage(square.img, &square.opts)
+}
 
 func shake(dst *ebiten.Image) {
 	now := time.Now()
-	t := now.Sub(shakeStartTime)
 
-	cursor := geo.VecXYi(ebiten.CursorPosition())
-
-	rect := geo.RectXYWH(150, 50, 20, 20)
-
-	offset := geo.Vec0
-	if rect.CollidePoint(cursor.XY()) {
-		offset = geo.ShakeConst(seed1, t.Seconds(), 10, 10)
-		square.img.Fill(color.NRGBA{0xff, 0x00, 0x00, 0xff})
+	shakyRect1.update(now)
+	if shakyRect1.shaking {
+		offset := shakyRect1.shaker.ShakeConst(now)
+		shakyRect1.draw(dst, offset, 0)
 	} else {
-		square.img.Fill(color.White)
+		shakyRect1.draw(dst, geo.Vec0, 0)
 	}
-	square.opts.GeoM.Reset()
-	square.opts.GeoM.Scale(rect.W, rect.H)
-	square.opts.GeoM.Translate(geo.VecXY(rect.TopLeft()).Plus(offset).XY())
-	dst.DrawImage(square.img, &square.opts)
 
-	rect = geo.RectXYWH(200, 50, 20, 20)
-
-	if rect.CollidePoint(cursor.XY()) && now.After(shakeStart1.Add(shakeDuration)) {
-		shakeStart1 = now
-		seed1 = rand.Float64()
-	}
-	offset = geo.Vec0
-	if !now.After(shakeStart1.Add(shakeDuration)) {
-		t = now.Sub(shakeStart1)
-		offset = geo.Shake(seed1, t.Seconds(), shakeDuration.Seconds(), 20, 20, geo.EaseOutQuad)
-		square.img.Fill(color.NRGBA{0xff, 0x00, 0x00, 0xff})
+	shakyRect2.update(now)
+	if shakyRect2.shaking {
+		offset := shakyRect2.shaker.Shake(now)
+		shakyRect2.draw(dst, offset, 0)
 	} else {
-		square.img.Fill(color.White)
+		shakyRect2.draw(dst, geo.Vec0, 0)
 	}
-	square.opts.GeoM.Reset()
-	square.opts.GeoM.Scale(rect.W, rect.H)
-	square.opts.GeoM.Translate(geo.VecXY(rect.TopLeft()).Plus(offset).XY())
-	dst.DrawImage(square.img, &square.opts)
 
-	rect = geo.RectXYWH(250, 50, 20, 20)
-
-	if rect.CollidePoint(cursor.XY()) && now.After(shakeStart2.Add(shakeDuration2)) {
-		shakeStart2 = now
-		seed2 = rand.Float64()
-	}
-	offsetA := 0.0
-	if !now.After(shakeStart2.Add(shakeDuration2)) {
-		t = now.Sub(shakeStart2)
-		offsetA = geo.Shake1(seed2, t.Seconds(), shakeDuration2.Seconds(), math.Pi/3, 4, geo.EaseOutQuad)
-		square.img.Fill(color.NRGBA{0xff, 0x00, 0x00, 0xff})
+	shakyRect3.update(now)
+	if shakyRect3.shaking {
+		offset := shakyRect3.shaker.Shake1(now)
+		shakyRect3.draw(dst, geo.Vec0, offset)
 	} else {
-		square.img.Fill(color.White)
+		shakyRect3.draw(dst, geo.Vec0, 0)
 	}
-	square.opts.GeoM.Reset()
-	square.opts.GeoM.Scale(rect.W, rect.H)
-	square.opts.GeoM.Translate(-rect.W/2, -rect.H/2)
-	square.opts.GeoM.Rotate(offsetA)
-	square.opts.GeoM.Translate(rect.W/2, rect.H/2)
-	square.opts.GeoM.Translate(geo.VecXY(rect.TopLeft()).XY())
-	dst.DrawImage(square.img, &square.opts)
 }
 
 const (

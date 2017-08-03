@@ -5,7 +5,7 @@
   branch = "master"
   name = "github.com/Bredgren/geo"
   packages = ["."]
-  revision = "86c952433a0b3e68a7f24d5ad8647cdcbb2aa2aa"
+  revision = "7db096941b3cfafaa7a25b16f3cba2dc585121f2"
 
 [[projects]]
   branch = "master"
@@ -35,7 +35,7 @@
   branch = "master"
   name = "github.com/hajimehoshi/ebiten"
   packages = [".","ebitenutil","ebitenutil/internal/assets","internal","internal/affine","internal/clock","internal/endian","internal/graphics","internal/jni","internal/loop","internal/opengl","internal/restorable","internal/sync","internal/ui","internal/web"]
-  revision = "807d03eb3b3e447af6e637275f9ea0826325a79b"
+  revision = "f0d47312c40d23657c7684293d054d2b45d69201"
 
 [[projects]]
   branch = "master"
@@ -47,7 +47,7 @@
   branch = "master"
   name = "golang.org/x/sys"
   packages = ["windows"]
-  revision = "396c9fc8fb0ce27fc7a1ff136dc5af797bba258a"
+  revision = "e312636bdaa2fac4f0acde9d17ab9fbad2b4ad10"
 
 [solve-meta]
   analyzer-name = "dep"
