@@ -44,7 +44,7 @@ pos := actualPos.Plus(offset)
 ...
 // Start again later
 if now.After(shaker.EndTime()) {
-  shaker.StartTime = now
+	shaker.StartTime = now
 }
 ```
 ![alt text](https://github.com/Bredgren/geoexample/blob/master/gif/shake.gif "Shake")
@@ -54,7 +54,7 @@ if now.After(shaker.EndTime()) {
 arcGen := geo.OffsetVec(geo.RandVecArc(30, 50, -math.Pi/2, math.Pi/4), geo.StaticVec(geo.VecXY(220, 70)))
 points := [100]geo.Vec{}
 for i := range points {
-		points[i] = arcGen()
+	points[i] = arcGen()
 }
 ```
 ![alt text](https://github.com/Bredgren/geoexample/blob/master/gif/vecgen.gif "VecGen")
