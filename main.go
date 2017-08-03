@@ -49,6 +49,7 @@ var options = []example{
 	{ebiten.Key2, "Perlin", perlin},
 	{ebiten.Key3, "Shake", shake},
 	{ebiten.Key4, "VecGen", vecGen},
+	{ebiten.Key5, "VecMod", vecMod},
 }
 
 func checkOptions() {
@@ -351,6 +352,57 @@ func vecGen(dst *ebiten.Image) {
 			dst.DrawImage(square.img, &square.opts)
 		}
 	}
+}
+
+type movingBlock struct {
+	pos, vel   geo.Vec
+	shape      geo.Rect
+	lastUpdate time.Time
+}
+
+func (m *movingBlock) update(t time.Time, bounds geo.Rect) {
+	dt := t.Sub(m.lastUpdate)
+	m.lastUpdate = t
+
+	m.pos.Add(m.vel.Times(dt.Seconds()))
+	m.pos.Mod(bounds)
+}
+
+func (m *movingBlock) draw(dst *ebiten.Image) {
+	square.img.Fill(color.NRGBA{0xff, 0x00, 0x00, 0xff})
+	square.opts.GeoM.Reset()
+	square.opts.GeoM.Scale(m.shape.Size())
+	m.shape.SetMid(m.pos.XY())
+	square.opts.GeoM.Translate(m.shape.TopLeft())
+	dst.DrawImage(square.img, &square.opts)
+}
+
+var (
+	block = movingBlock{
+		pos:   geo.VecXY(Width/2, Height/2),
+		vel:   geo.VecXY(1, 1).WithLen(50),
+		shape: geo.RectWH(5, 5),
+	}
+	boundingRect = geo.Rect{}
+)
+
+func vecMod(dst *ebiten.Image) {
+	center := geo.VecXY(Width/2, Height/2)
+	cursor := geo.VecXYi(ebiten.CursorPosition())
+	fromCenter := cursor.Minus(center)
+	boundingRect.SetSize(fromCenter.Times(2).XY())
+	boundingRect.Normalize()
+	boundingRect.SetMid(center.XY())
+
+	block.update(time.Now(), boundingRect)
+
+	square.img.Fill(color.NRGBA{0xff, 0xff, 0xff, 0x44})
+	square.opts.GeoM.Reset()
+	square.opts.GeoM.Scale(boundingRect.Size())
+	square.opts.GeoM.Translate(boundingRect.TopLeft())
+	dst.DrawImage(square.img, &square.opts)
+
+	block.draw(dst)
 }
 
 func main() {

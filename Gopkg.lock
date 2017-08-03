@@ -5,7 +5,7 @@
   branch = "master"
   name = "github.com/Bredgren/geo"
   packages = ["."]
-  revision = "7db096941b3cfafaa7a25b16f3cba2dc585121f2"
+  revision = "c0750a0dae05dda870a94ed0e1f6aa8ddefae804"
 
 [[projects]]
   branch = "master"
