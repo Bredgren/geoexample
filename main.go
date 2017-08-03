@@ -153,7 +153,7 @@ func easeFunctions(dst *ebiten.Image) {
 	t := geo.Clamp(dt.Seconds()/easeTime.Seconds(), 0, 1)
 
 	startY := 30.0
-	start, end := geo.VecXY(100, startY), geo.VecXY(Width-20, startY)
+	start, end := geo.VecXY(100, startY), geo.VecXY(Width-80, startY)
 	offset := geo.VecXY(0, easeSize*1.2)
 
 	for i, fn := range easeFns {
