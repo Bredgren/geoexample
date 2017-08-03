@@ -48,7 +48,7 @@ var options = []example{
 	{ebiten.Key1, "Ease", easeFunctions},
 	{ebiten.Key2, "Perlin", perlin},
 	{ebiten.Key3, "Shake", shake},
-	{ebiten.Key4, "NumGen", vecGen},
+	{ebiten.Key4, "VecGen", vecGen},
 }
 
 func checkOptions() {
@@ -330,8 +330,19 @@ func vecGen(dst *ebiten.Image) {
 	points2[rand.Intn(len(points2))] = vecGen2()
 	points3[rand.Intn(len(points3))] = vecGen3()
 
-	square.img.Fill(color.White)
+	square.img.Fill(color.NRGBA{0x88, 0x88, 0xff, 0x55})
+	square.opts.GeoM.Reset()
+	square.opts.GeoM.Scale(200, 70)
+	square.opts.GeoM.Translate(80, 130)
+	dst.DrawImage(square.img, &square.opts)
 
+	square.img.Fill(color.Black)
+	square.opts.GeoM.Reset()
+	square.opts.GeoM.Scale(160, 50)
+	square.opts.GeoM.Translate(100, 140)
+	dst.DrawImage(square.img, &square.opts)
+
+	square.img.Fill(color.White)
 	for _, points := range [][]geo.Vec{points1[:], points2[:], points3[:]} {
 		for _, p := range points {
 			square.opts.GeoM.Reset()
