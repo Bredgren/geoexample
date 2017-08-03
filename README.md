@@ -52,7 +52,7 @@ if now.After(shaker.EndTime()) {
 ### VecGen
 ```go
 arcGen := geo.OffsetVec(geo.RandVecArc(30, 50, -math.Pi/2, math.Pi/4), geo.StaticVec(geo.VecXY(220, 70)))
-points := [100]geo.Vec
+points := [100]geo.Vec{}
 for i := range points {
 		points[i] = arcGen()
 }
