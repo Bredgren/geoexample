@@ -2,10 +2,10 @@
 
 
 [[projects]]
-  branch = "master"
   name = "github.com/Bredgren/geo"
   packages = ["."]
-  revision = "c0750a0dae05dda870a94ed0e1f6aa8ddefae804"
+  revision = "10713e3abfa687ebc537925fa290d10b5a88a1ec"
+  version = "v1.0.0-beta2"
 
 [[projects]]
   branch = "master"
@@ -17,7 +17,7 @@
   branch = "master"
   name = "github.com/go-gl/glfw"
   packages = ["v3.2/glfw"]
-  revision = "222b83c41c19cc975bfbf6f2611f3a97bde91a56"
+  revision = "513e4f2bf85c31fba0fc4907abd7895242ccbe50"
 
 [[projects]]
   branch = "master"
@@ -32,26 +32,25 @@
   revision = "a2d36020a9b2af0f7aefb23467ab48f3b501beec"
 
 [[projects]]
-  branch = "master"
   name = "github.com/hajimehoshi/ebiten"
-  packages = [".","ebitenutil","ebitenutil/internal/assets","internal","internal/affine","internal/clock","internal/endian","internal/graphics","internal/jni","internal/loop","internal/opengl","internal/restorable","internal/sync","internal/ui","internal/web"]
-  revision = "f0d47312c40d23657c7684293d054d2b45d69201"
+  packages = [".","ebitenutil","ebitenutil/internal/assets","internal","internal/affine","internal/clock","internal/endian","internal/graphics","internal/jni","internal/math","internal/opengl","internal/restorable","internal/sync","internal/ui","internal/web"]
+  revision = "71117073d0ff7767588dda407c59028ecdea48cf"
 
 [[projects]]
   branch = "master"
   name = "golang.org/x/mobile"
   packages = ["gl"]
-  revision = "683b305bdbdf5901d6d9b094e4948b51a37403a2"
+  revision = "e66540375e9941f301a0fbd8134a06076bfc873e"
 
 [[projects]]
   branch = "master"
   name = "golang.org/x/sys"
   packages = ["windows"]
-  revision = "e312636bdaa2fac4f0acde9d17ab9fbad2b4ad10"
+  revision = "43e60d72a8e2bd92ee98319ba9a384a0e9837c08"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "f95eb02c9ca1c9852761630a13b2aa823d4b6340b41414d15eba35d9f52ed933"
+  inputs-digest = "b224533a1eb1eefd18275a1336e3308a3febda4e48b265ec1c601c3b3452878c"
   solver-name = "gps-cdcl"
   solver-version = 1
